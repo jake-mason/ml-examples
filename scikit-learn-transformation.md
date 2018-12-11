@@ -6,7 +6,7 @@ This tutorial uses scikit-learn version 0.20, and I don't think the version of p
 
 Let's start with importing the right packages:
 
-```{python}
+```python
 import pandas as pd
 import numpy as np
 from sklearn.base import TransformerMixin
@@ -18,7 +18,7 @@ from sklearn.impute import SimpleImputer
 
 Now, let's define a "raw" dataset that we want to transform:
 
-```{python}
+```python
 df = pd.DataFrame(
     {
             'a': [1, 'a', 1, np.nan, 'b'],
@@ -32,36 +32,31 @@ df = pd.DataFrame(
 
 Next, we'll define our five "X" columns' strategies in a JSON-like format:
 
-```{python}
+```python
 strategies = [
 	{
 		'name': 'a',
 		'kind': 'categorical',
-		'encoding_strategy': 'one-hot',
 		'default': None
 	},
 	{
 		'name': 'b',
 		'kind': 'continuous',
-		'encoding_strategy': None,
 		'default': None
 	},
 	{
 		'name': 'c',
 		'kind': 'categorical',
-		'encoding_strategy': 'one-hot',
 		'default': None
 	},
 	{
 		'name': 'd',
 		'kind': 'categorical',
-		'encoding_strategy': 'one-hot',
 		'default': None
 	},
 	{
 		'name': 'e',
 		'kind': 'continuous',
-		'encoding_strategy': None,
 		'default': None
 	}
 ]
@@ -69,14 +64,14 @@ strategies = [
 
 Interestingly, although the `dtype` of column `'a'` is `object`, the numbers within that Series aren't actually converted to string. This creates problems in later pipeline steps, so a fine way to circumvent this issue is to cast all `object` columns to `str`.
 
-```{python}
+```python
 for col in df.select_dtypes('object'):
 	df[col] = df[col].astype(str)
 ```
 
 Now, let's create our custom `ColumnTransformer` instance. We'll define strategies for both categorical and continuous predictors. Note that scikit supports the `'passthrough'` option for features not requiring any transforming, but still needing to be included in the final dataset. The default strategy for dealing with continuous predictors in this example is to do nothing, so we'll just pass through these ones.
 
-```{python}
+```python
 categorical_columns = [strategy['name'] for strategy in strategies if strategy['kind'] == 'categorical']
 continuous_columns = [strategy['name'] for strategy in strategies if strategy['kind'] == 'continuous']
 
@@ -96,7 +91,7 @@ column_transformer = ColumnTransformer(
 
 Let's see how it works!
 
-```{python}
+```python
 column_transformer.fit_transform(df)
 array([[1., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 1., 0.],
        [0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 2., 1.],
@@ -109,7 +104,7 @@ array([[1., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 1., 0.],
 
 Now let's simulate using this same transformer - used to transform the raw training data - in a scoring scenario. I'm going to add some new categories to columns `'a'` and `'c'`, and a new value to column `'e'`. Let's see how the `ColumnTransformer` from above handles this:
 
-```{python}
+```python
 score_df = pd.DataFrame(
     {
             'a': [1, 'a', 2, np.nan, 'c'],
@@ -134,7 +129,7 @@ column_transformer.transform(score_df)
 
 Notice how the transformer ignores the new categories and values, because we specified `handle_unknown='ignore'` in the initialization of the `OneHotEncoder` from above. What happens if we set `handle_unknown='error'`?
 
-```{python}
+```python
 categorical_transformer = OneHotEncoder(sparse=False, handle_unknown='error')
 continuous_transformer = 'passthrough'
 
@@ -160,7 +155,7 @@ column_transformer.transform(score_df)
 
 The follow `ValueError` should have been raised:
 
-```{python}
+```python
 ValueError: Found unknown categories ['2', 'c'] in column 0 during transform
 ```
 
@@ -170,7 +165,7 @@ So, depending on how you want to handle new categories, this is a really importa
 
 We should be able to save this transformer for use in production, just like we would with any other scikit-learn estimator.
 
-```{python}
+```python
 import pickle
 
 pickle.dump(column_transformer, open('column_transformer.pkl', 'wb'))
