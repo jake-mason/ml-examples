@@ -4,7 +4,7 @@ I recently ran into an issue interpreting the results of a cumulative gains char
 
 ![one-class-cumulative-gains](one-class-cumulative-gains.png)
 
-There doesn't seem to be much lift there, does there? At first glance, yes. But upon further investigation, this is simply due to there being a lot of positive cases (75% in the sample) and the model being good. Here is my dataset, where
+There doesn't seem to be much lift there, does there? At first glance, yes. But upon further investigation, this is simply due to there being a lot of positive cases (75% in the sample) and the model being able to discriminate well between the two classes. Here is my dataset, where
 
 - `y_true` contains the true labels/outcomes
 - `y_proba` contains the predicted probability of belonging to the positive class
