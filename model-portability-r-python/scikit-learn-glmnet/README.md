@@ -149,8 +149,8 @@ customLogisticRegression <- function(coef, intercept = 0, ...){
 }
 
 # create a method for function print for class myClassifierClass
-predict.customLogisticRegression <- function(model_object, newdata){
-	decision <- (newdata %*% c(model_object$coef)) + model_object$intercept
+predict.customLogisticRegression <- function(model, newdata){
+	decision <- (newdata %*% c(model$coef)) + model$intercept
 	return(sigmoid(decision))
 }
 
