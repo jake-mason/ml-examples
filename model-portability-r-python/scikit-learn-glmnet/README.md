@@ -63,6 +63,7 @@ Now we'll try to predict in R:
 
 ```R
 library(glmnet)
+library(dplyr)
 
 data(iris)
 
@@ -131,4 +132,32 @@ mean(y_proba_test_python_r - y_proba_test_python)
 # These are both *very* small numbers and is likely only due
 # to the fact the predicted probabilities from Python were saved only up to the 7th decimal place,
 # whereas the probabilities in R are unrounded (and go out about twice as many decimal places)
+```
+
+Now let's see if we can manipulate things in a way such that we can use R's native `predict` function to, well, make a prediction:
+
+```R
+customLogisticRegression <- function(X, y, coef, intercept = 0, ...){
+	model <- structure(
+		list(
+			x = X,
+			y = y,
+			coef = coef,
+			intercept = intercept
+		), 
+		class = 'customLogisticRegression'
+	)
+	return(model)
+}
+
+# create a method for function print for class myClassifierClass
+predict.customLogisticRegression <- function(obj){
+	decision <- (obj$x %*% c(obj$coef)) + obj$intercept
+	return(sigmoid(decision))
+} 
+
+instance <- customLogisticRegression(X_test, y_test, coef_X, intercept)
+y_proba_test_custom <- predict(instance)
+mean(y_proba_test_python_r - y_proba_test_custom)
+# 0 -> there is no difference between the two
 ```
