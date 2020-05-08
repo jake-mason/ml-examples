@@ -137,11 +137,10 @@ mean(y_proba_test_python_r - y_proba_test_python)
 Now let's see if we can manipulate things in a way such that we can use R's native `predict` function to, well, make a prediction:
 
 ```R
-customLogisticRegression <- function(X, y, coef, intercept = 0, ...){
+customLogisticRegression <- function(X, coef, intercept = 0, ...){
 	model <- structure(
 		list(
 			x = X,
-			y = y,
 			coef = coef,
 			intercept = intercept
 		), 
@@ -156,7 +155,7 @@ predict.customLogisticRegression <- function(obj){
 	return(sigmoid(decision))
 } 
 
-instance <- customLogisticRegression(X_test, y_test, coef_X, intercept)
+instance <- customLogisticRegression(X_test, coef_X, intercept)
 y_proba_test_custom <- predict(instance)
 mean(y_proba_test_python_r - y_proba_test_custom)
 # 0 -> there is no difference between the two
