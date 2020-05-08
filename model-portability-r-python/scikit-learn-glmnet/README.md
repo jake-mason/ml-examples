@@ -154,8 +154,8 @@ predict.customLogisticRegression <- function(model_object, newdata){
 	return(sigmoid(decision))
 }
 
-instance <- customLogisticRegression(coef_X, intercept)
-y_proba_test_custom <- predict(instance, X_test)
+model <- customLogisticRegression(coef_X, intercept)
+y_proba_test_custom <- predict(model, X_test)
 mean(y_proba_test_python_r - y_proba_test_custom)
 # 0 -> there is no difference between the two
 ```
