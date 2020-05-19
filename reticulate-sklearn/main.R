@@ -125,3 +125,10 @@ R_result_X <- column_transform(df, strategies)
 python_result_X <- column_transformer$transform(df)
 
 all(R_result_X == python_result_X)
+
+# Write strategies to YAML
+library(yaml)
+write_yaml(strategies, 'strategies.yaml')
+strategies_from_yaml <- yaml.load_file('strategies.yaml')
+R_result_X_from_yaml <- column_transform(df, strategies_from_yaml)
+all(R_result_X == R_result_X_from_yaml) # FALSE -> not quite equal but very close, upon further inspection
